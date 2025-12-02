@@ -1,17 +1,50 @@
 const net = require("net");
+const fs = require("fs");
+const path = require("path");
 
-// You can use print statements as follows for debugging, they'll be visible when running tests.
+const mimeTypes = {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml"
+};
+
 console.log("Logs from your program will appear here!");
 
-// TODO: Uncomment the code below to pass the first stage
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
-        if(GET === "/"){
-        socket.write("HTTP/1.1 200 OK\r\n\r\n");
+        const request = data.toString();
+        console.log(request)
+        
+        const [method, url] = request.split(" ");
+
+        let filepath = url === "/" ? "./index.html" : "." + url;
+        
+        const ext = path.extname(filepath);
+
+        if (!fs.existsSync(filepath)) {
+            socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+            socket.end();
+            return;
         }
-        else{
-            socket.write("HTTP/1.1 404 Not Found\r\n\r\n")
-        }
+
+        const fileData = fs.readFileSync(filepath);
+
+        const contentType = mimeTypes[ext] || "application/octet-stream";
+
+        const responseHeaders = 
+        `HTTP/1.1 200 OK\r\n` +
+        `Content-Type: ${contentType}\r\n` +
+        `Content-Length: ${fileData.length}\r\n` +
+        `\r\n`;
+
+        socket.write(responseHeaders);
+        socket.write(fileData);
+        socket.end();        
     });
     socket.on("close", () => {
         socket.end();
@@ -19,4 +52,3 @@ const server = net.createServer((socket) => {
 });
 
 server.listen(4221, "localhost");
-S
