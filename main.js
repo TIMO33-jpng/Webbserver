@@ -73,7 +73,7 @@ const server = net.createServer((socket) => {
 
         let filepath;
         if (urlPath === "") {
-            const idxPhp = path.join(siteRoot, "index.php");
+            const idxPhp = path.join(siteRoot, "index.php"); 
             const idxHtml = path.join(siteRoot, "index.html");
             filepath = fs.existsSync(idxPhp) ? idxPhp : idxHtml;
         } else {
@@ -94,7 +94,6 @@ const server = net.createServer((socket) => {
 
         const resolved = path.resolve(filepath);
         const allowedroot = path.resolve(publicRoot);
-        console.log(`[DEBUG] urlPath: "${urlPath}", filepath: ${filepath}, resolved: ${resolved}, exists: ${fs.existsSync(resolved)}`);
 
         if (!resolved.startsWith(allowedroot)) {
             socket.write("HTTP/1.1 403 Forbidden \r\n\r\n");
