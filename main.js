@@ -21,7 +21,7 @@ const mimeTypes = {
 };
 
 console.log("Logs här");
-
+console.log("De sites som är igång är:", SITES);
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         console.log(data)
@@ -47,7 +47,7 @@ const server = net.createServer((socket) => {
         const allowedroot = path.resolve(publicRoot);
 
         if (!resolved.startsWith(allowedroot)) {
-            socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+            socket.write("HTTP/1.1 403 Forbidden \r\n\r\n");
             socket.end();
             return;
         }
