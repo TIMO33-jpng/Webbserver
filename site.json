@@ -6,6 +6,7 @@
         "grillkorv.local": "public/grillkorv",
         "grynkorv.local": "public/grynkorv",
         "vego.local": "public/vego",
-        "chorizo.local": "public/chorizo"
+        "chorizo.local": "public/chorizo",
+        "php.local": "public/php"
     }
 }

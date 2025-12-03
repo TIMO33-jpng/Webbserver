@@ -55,20 +55,46 @@ const server = net.createServer((socket) => {
         let host = request.match(/Host: ([^\r\n]+)/)?.[1] || "";
         host = host.split(":")[0];
 
-        const domainMap = Object.fromEntries(
-            (process.env.SITES || "").split(";").map(pair => pair.split("="))
-        )
+        let domainMap = {};
+        try {
+            const envEntries = (process.env.SITES || "").split(";").filter(Boolean).map(pair => pair.split("="));
+            const envMap = Object.fromEntries(envEntries);
+            domainMap = Object.keys(envMap).length ? envMap : (SITES || {});
+        } catch (e) {
+            domainMap = (SITES || {});
+        }
 
         const publicRoot = path.join(ROOT, "public")
 
         let siteRoot = domainMap[host] ? path.join(ROOT, domainMap[host]) : publicRoot;
 
-        const [method, url] = request.split(" ");
+        const [method, urlRaw] = request.split(" ");
+        const urlPath = (urlRaw || "").split('?')[0].replace(/^\/+/, '');
 
-        const filepath = url === "/" ? path.join(siteRoot, "index.html") : path.join(siteRoot, url);
+        let filepath;
+        if (urlPath === "") {
+            const idxPhp = path.join(siteRoot, "index.php");
+            const idxHtml = path.join(siteRoot, "index.html");
+            filepath = fs.existsSync(idxPhp) ? idxPhp : idxHtml;
+        } else {
+            let candidate = path.join(siteRoot, urlPath);
+            const absCandidate = path.resolve(candidate);
+            try {
+                if (fs.existsSync(absCandidate) && fs.statSync(absCandidate).isDirectory()) {
+                    const idxPhp = path.join(absCandidate, "index.php");
+                    const idxHtml = path.join(absCandidate, "index.html");
+                    if (fs.existsSync(idxPhp)) candidate = idxPhp;
+                    else candidate = idxHtml;
+                }
+            } catch (e) {
+                // ignore and use candidate
+            }
+            filepath = candidate;
+        }
 
         const resolved = path.resolve(filepath);
         const allowedroot = path.resolve(publicRoot);
+        console.log(`[DEBUG] urlPath: "${urlPath}", filepath: ${filepath}, resolved: ${resolved}, exists: ${fs.existsSync(resolved)}`);
 
         if (!resolved.startsWith(allowedroot)) {
             socket.write("HTTP/1.1 403 Forbidden \r\n\r\n");
@@ -83,12 +109,37 @@ const server = net.createServer((socket) => {
         }
 
         const ext = path.extname(resolved);
-        const fileData = fs.readFileSync(resolved);
+        let fileData;
+        try {
+            fileData = fs.readFileSync(resolved);
+        } catch (err) {
+            socket.write("HTTP/1.1 500 Internal Server Error\r\n\r\n");
+            socket.end();
+            return;
+        }
         const contentType = mimeTypes[ext] || "application/octet-stream";
 
         if (ext === ".php") {
             execFile("php", [resolved], (error, stdout, stderr) => {
                 if (error) {
+                    // If php binary isn't found, fall back to serving the PHP source as HTML
+                    if (error.code === 'ENOENT') {
+                        const responseHeaders =
+                            `HTTP/1.1 200 OK\r\n` +
+                            `Content-Type: text/html\r\n` +
+                            `Content-Length: ${fileData.length}\r\n` +
+                            `X-PHP-Execution: disabled\r\n` +
+                            `\r\n`;
+                        try {
+                            socket.write(responseHeaders);
+                            socket.write(fileData);
+                            socket.end();
+                        } catch (e) {
+                            socket.end();
+                        }
+                        return;
+                    }
+
                     socket.write("HTTP/1.1 500 Internal Server Error\r\n\r\n");
                     socket.end();
                     return;
