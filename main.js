@@ -3,6 +3,7 @@
 const net = require("net");
 const fs = require("fs");
 const path = require("path");
+const { execFile } = require("child_process");
 
 const ROOT = process.pkg ? path.dirname(process.execPath) : __dirname
 
@@ -33,6 +34,7 @@ ensureSiteDirs();
 
 const mimeTypes = {
     ".html": "text/html",
+    ".php": "text/php",
     ".css": "text/css",
     ".js": "application/javascript",
     ".png": "image/png",
@@ -83,6 +85,27 @@ const server = net.createServer((socket) => {
         const ext = path.extname(resolved);
         const fileData = fs.readFileSync(resolved);
         const contentType = mimeTypes[ext] || "application/octet-stream";
+
+        if (ext === ".php") {
+            execFile("php", [resolved], (error, stdout, stderr) => {
+                if (error) {
+                    socket.write("HTTP/1.1 500 Internal Server Error\r\n\r\n");
+                    socket.end();
+                    return;
+                }
+
+                const responseHeaders =
+                    `HTTP/1.1 200 OK\r\n` +
+                    `Content-Type: text/html\r\n` +
+                    `Content-Length: ${Buffer.byteLength(stdout)}\r\n` +
+                    `\r\n`;
+
+                socket.write(responseHeaders);
+                socket.write(stdout);
+                socket.end();
+            });
+            return; 
+        }
 
         const responseHeaders =
             `HTTP/1.1 200 OK\r\n` +
