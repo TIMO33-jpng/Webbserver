@@ -2,6 +2,11 @@ const net = require("net");
 const fs = require("fs");
 const path = require("path");
 
+const ROOT = process.pkg ? path.dirname(process.execPath) : __dirname
+
+const config = require("./site.json");
+const SITES = config.sites;
+
 const mimeTypes = {
     ".html": "text/html",
     ".css": "text/css",
@@ -23,21 +28,20 @@ const server = net.createServer((socket) => {
         let host = request.match(/Host: ([^\r\n]+)/)?.[1] || "";
         host = host.split(":")[0];
 
-        let siteRoot = "./public/korv";
+        const domainMap = Object.fromEntries(
+            (process.env.SITES || "").split(";").map(pair => pair.split("="))
+        )
 
-        if (host === "korv.local") {
-            siteRoot = "./public/korv";
-        }
-        else if (host === "bratwurst.local") {
-            siteRoot = "./public/bratwurst";
-        }
+        const publicRoot = path.join(ROOT, "public")
+
+        let siteRoot = domainMap[host] ? path.join(ROOT, domainMap[host]) : publicRoot;
 
         const [method, url] = request.split(" ");
 
-        let filepath = url === "/" ? path.join(siteRoot, "index.html") : path.join(siteRoot, url);
+        const filepath = url === "/" ? path.join(siteRoot, "index.html") : path.join(siteRoot, url);
 
         const resolved = path.resolve(filepath);
-        const allowedroot = path.resolve("./public");
+        const allowedroot = path.resolve(publicRoot);
 
         if(!resolved.startsWith(allowedroot)) {
             socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");

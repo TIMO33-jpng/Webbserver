@@ -1,0 +1,35 @@
+{
+  "name": "timo_webserver",
+  "version": "1.0.0",
+  "bin": {
+    "timo_webserver": "main.js"
+  },
+  "pkg": {
+    "outputPath": "dist",
+    "assets": [
+      "public/**/*",
+      "site.json"
+    ]
+  },
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TIMO33-jpng/Webbserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TIMO33-jpng/Webbserver/issues"
+  },
+  "homepage": "https://github.com/TIMO33-jpng/Webbserver#readme"
+}

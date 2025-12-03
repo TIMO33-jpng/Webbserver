@@ -1,0 +1,6 @@
+{
+    "sites": {
+        "korv.local": "public/korv",
+        "bratwurst.local": "public/bratwurst"
+    }
+}
