@@ -1,42 +1,93 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Korv Deluxe</title>
-  <link rel="stylesheet" href="style/css.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alla Korvar — Korv Deluxe</title>
+    <link rel="stylesheet" href="style/css.css">
 
 </head>
 <body>
-  <h1>🔥 Korv Deluxe 🔥</h1>
-  <p>Timo gillar korv, *wink wink* 😏</p>
+    <header>
+        <img src="bilder/falukorv.png" alt="Korvikon" />
+        <div>
+            <h1>Alla Korvar</h1>
+            <p>Välkommen till Korv Deluxe — din startsida för alla sorters korvar. Klicka för att läsa mer om varje korv.</p>
+        </div>
+    </header>
 
-  <div id="korv-fakta">Klicka på knappen för en asynkad korv-fakta 🍖</div>
-  <button onclick="hamtaKorvFakta()">Hämta Korv-fakta</button>
+    <nav aria-label="Korvmeny">
+        <ul>
+            <li><a href="falukorv.html">Falukorv</a></li>
+            <li><a href="grillkorv.html">Grillkorv</a></li>
+            <li><a href="chorizo.html">Chorizo</a></li>
+            <li><a href="lammkorv.html">Lammkorv</a></li>
+            <li><a href="vegokorv.html">Vegokorv</a></li>
+        </ul>
+    </nav>
 
-  <script>
-    async function hamtaKorvFakta() {
-      const faktaRuta = document.getElementById('korv-fakta');
-      faktaRuta.textContent = 'Hämtar korv-fakta... 🌭';
+    <section class="grid" aria-label="Utvalda korvar">
+        <article class="card">
+            <a href="falukorv.html"><img src="bilder/falukorv.png" alt="Falukorv"></a>
+            <h3><a href="falukorv.html">Falukorv</a></h3>
+            <p>En svensk klassiker — perfekt i ugn eller stekt.</p>
+        </article>
 
-      try {
-        // Fake async fetch
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        <article class="card">
+            <a href="grillkorv.html"><img src="bilder/grillkorv.png" alt="Grillkorv"></a>
+            <h3><a href="grillkorv.html">Grillkorv</a></h3>
+            <p>Sommarens stjärna: crispy yta och saftig kärna.</p>
+        </article>
 
+        <article class="card">
+            <a href="chorizo.html"><img src="bilder/chorizo.png" alt="Chorizo"></a>
+            <h3><a href="chorizo.html">Chorizo</a></h3>
+            <p>Kryddig och rökig — perfekt i grytor och tapas.</p>
+        </article>
+
+        <article class="card">
+            <a href="vegokorv.html"><img src="bilder/vegokorv.png" alt="Vegetarisk korv"></a>
+            <h3><a href="vegokorv.html">Vegokorv</a></h3>
+            <p>Vegetariskt alternativ med mycket smak.</p>
+        </article>
+    </section>
+
+    <aside id="korv-fakta" aria-live="polite">
+        Klicka på knappen för en slumpmässig korv-fakta 🍖
+    </aside>
+    <div class="actions">
+        <button id="nyFaktaBtn">Ny korv-fakta</button>
+    </div>
+
+    <script>
+        // Enkel lista med korv-fakta — utöka gärna eller hämta från server senare
         const faktaLista = [
-          'Korv är alltid godare efter midnatt.',
-          'Det finns över 500 olika sorters korv i världen.',
-          'Timo äter korv snabbare än ljusets hastighet (nästan).',
-          'En perfekt grillad korv kräver tålamod och respekt.',
-          'Timos törst för korv är mer än en höra för kuk'
+            'Korv är alltid godare efter midnatt.',
+            'Det finns över 500 olika sorters korv i världen.',
+            'Timo äter korv snabbare än ljusets hastighet (nästan).',
+            'En perfekt grillad korv kräver tålamod och respekt.',
+            'Korv kan lagras länge om den är ordentligt rökt eller saltad.',
+            'Vegetariska korvar blir allt vanligare och lika vällagade.',
+            'Charkuterihantverket har anor från antiken.'
         ];
 
-        const slump = faktaLista[Math.floor(Math.random() * faktaLista.length)];
-        faktaRuta.textContent = slump;
-      } catch (error) {
-        faktaRuta.textContent = 'Kunde inte hämta korv-fakta 😢';
-      }
-    }
-  </script>
+        async function hamtaKorvFakta() {
+            const faktaRuta = document.getElementById('korv-fakta');
+            faktaRuta.textContent = 'Hämtar korv-fakta... 🌭';
+
+            try {
+                // Simulera asynkron hämtning
+                await new Promise(resolve => setTimeout(resolve, 700));
+                const slump = faktaLista[Math.floor(Math.random() * faktaLista.length)];
+                faktaRuta.textContent = slump;
+            } catch (error) {
+                faktaRuta.textContent = 'Kunde inte hämta korv-fakta 😢';
+            }
+        }
+
+        // Kör på första laddning och bind knapp
+        document.getElementById('nyFaktaBtn').addEventListener('click', hamtaKorvFakta);
+        window.addEventListener('load', hamtaKorvFakta);
+    </script>
 </body>
 </html>
