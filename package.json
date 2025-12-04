@@ -2,23 +2,28 @@
   "name": "forbidden_httpserver",
   "version": "1.0.0",
   "bin": {
-    "forbidden_httpserver": "main.js"
+    "forbidden_httpserver": "httpserver.js"
   },
   "pkg": {
-    "outputPath": "dist",
     "assets": [
       "public/**/*",
-      "site.json"
+      "site.json",
+      "node_modules/**/*"
+    ],
+    "scripts": [
+      "forbiddenapp.js",
+      "httpserver.js",
+      "sqlserver.js"
     ]
   },
   "description": "",
-  "main": "main.js",
+  "main": "httpserver.js",
   "devDependencies": {
     "pkg": "^5.8.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:exe": "pkg . --out-path . --targets node18-win-x64"
+    "build:exe": "pkg forbiddenapp.js --out-path . --targets node18-win-x64"
   },
   "repository": {
     "type": "git",
@@ -33,6 +38,22 @@
   },
   "homepage": "https://github.com/TIMO33-jpng/Webbserver#readme",
   "dependencies": {
-    "daemon": "^1.1.0"
+    "daemon": "^1.1.0",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}  }    "uuid": "^8.3.2"    "sqlite3": "^5.0.2",    "socket.io": "^4.0.0",    "serve-favicon": "^2.5.0",    "rimraf": "^3.0.2",    "pkg": "^5.8.1",    "nodemon": "^2.0.7",    "node-fetch": "^2.6.1",    "morgan": "^1.10.0",    "ip": "^1.1.5",    "http-proxy": "^1.18.1",    "fs-extra": "^9.1.0",    "express": "^4.17.1",    "inquirer": "^13.0.2"
   }
 }
