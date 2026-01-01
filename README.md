@@ -1,4 +1,4 @@
-Forbidden är en jätte bra webserver som konkurerar med XAMPP och är self mad :-D
+Forbidden är en jättebra webserver som konkurerar med XAMPP och är selfmade :-D
 
 För att skappa en exe så kör du:
 1.
